@@ -11,82 +11,96 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error
 
 def PCA(X, y):
-    # hyperparameters
-    n_dim = 2
-    
-    # label color mapping
-    labels = ['hate', 'chill']
-    colors = ['red', 'blue']
+	# hyperparameters
+	n_dim = 2
+	
+	# label color mapping
+	labels = ['hate', 'chill']
+	colors = ['red', 'blue']
 
-    
-    # apply PCA to featurized tweets
-    model = sklearn_PCA(n_components=n_dim)
-    X = .fit_transform(X)
+	
+	# apply PCA to featurized tweets
+	pca_model = sklearn_PCA(n_components=n_dim)
+	X = pca_model.fit_transform(X)
 
-    # plot data
-    for i in range(len(X)):
-        x1, x2 = X[i, 0], X[i, 1]
-        label = y[i]
-        if i % 100 == 0:
-	        print(i, x1, x2, label)
-        plt.scatter(x1, x2, c=colors[label], cmap=plt.cm.Paired)
+	# plot data
+	for i in range(len(X)):
+		x1, x2 = X[i, 0], X[i, 1]
+		label = y[i]
+		if i % 100 == 0:
+			print(i, x1, x2, label)
+		plt.scatter(x1, x2, c=colors[label], cmap=plt.cm.Paired)
 
-    # legend
-    patches = [mpatches.Patch(color=colors[i], label=labels[i]) for i in range(len(labels))]
-    plt.legend(handles=patches, fontsize=10)
+	# legend
+	patches = [mpatches.Patch(color=colors[i], label=labels[i]) for i in range(len(labels))]
+	plt.legend(handles=patches, fontsize=10)
 
-    plt.show()
+	plt.show()
 
 def knn(X, y):
-	#hyperparameters
+	# partition dataset
+	training_percent = .70
+	X_train, y_train, X_test, y_test = partition(X, y, training_percent)
+	
+	# hyperparameters
 	n_neighbors = 5
+	
+	# train
+	knn_model = KNeighborsClassifier(n_neighbors=n_neighbors)
+	knn_model.fit(X_train, y_train)
 
+	# computer accuracy
+	score = knn_model.score(X_test, y_test)
 
+	return score
 
+def random_forest(X, y):
+	# partition dataset
+	training_percent = .70
+	X_train, y_train, X_test, y_test = partition(X, y, training_percent)
+	
+	# hyperparameters
+	forests_num = 20
+	
+	# train
+	random_forest = RandomForestClassifier(n_estimators=forests_num)
+	random_forest.fit(X_train, y_train)
 
-# def random_forest(X, y):
-#     # partition dataset
-#     training_percent = .70
-#     partition_index = int(training_percent * len(X))
-#     X_train = X[:partition_index]
-#     X_test = X[partition_index:]
-#     y_train = y[:partition_index]
-#     y_test = y[partition_index:]
-    
-#     # hyperparameters
-#     forests_num = 20
-    
-#     # train
-#     random_forest = RandomForestClassifier(n_estimators=forests_num)
-#     random_forest.fit(X_train, y_train)
+	# computer accuracy
+	score = random_forest.score(X_test, y_test)
+	
+	return score
 
-#     # predict
-#     length = len(X_test)
-#     X_predicts = [random_forest.predict(X_test[i], y_test[i]) for i in length]
-    
-#     return X_predicts
+def partition(X, y, training_percent):
+	partition_index = int(training_percent * len(X))
+	X_train = X[:partition_index]
+	y_train = y[:partition_index]
+	X_test = X[partition_index:]
+	y_test = y[partition_index:]
+
+	return [X_train, y_train, X_test, y_test]
 
 # def rnn(X, y):
-#     #hyperparameters
-#     look_back = 1
-    
-#     # normalizing featurized tweets
-#     scaler = MinMaxScaler(feature_range=(0, 1))
-#     X = scalar.fit_transform(X)
-    
-#     # partition dataset
-#     training_percent = .70
-#     partition_index = int(training_percent * len(X))
-#     X_train = X[:partition_index]
-#     X_test = X[partition_index:]
-#     y_train = y[:partition_index]
-#     y_test = y[partition_index:]
-    
+#	 #hyperparameters
+#	 look_back = 1
+	
+#	 # normalizing featurized tweets
+#	 scaler = MinMaxScaler(feature_range=(0, 1))
+#	 X = scalar.fit_transform(X)
+	
+#	 # partition dataset
+#	 training_percent = .70
+#	 partition_index = int(training_percent * len(X))
+#	 X_train = X[:partition_index]
+#	 X_test = X[partition_index:]
+#	 y_train = y[:partition_index]
+#	 y_test = y[partition_index:]
+	
 # # convert an array of values into a dataset matrix
 # def create_dataset(dataset, look_back=1):
-#     dataX, dataY = [], []
-#     for i in range(len(dataset)-look_back-1):
-#         a = dataset[i:(i+look_back), 0]
-#         dataX.append(a)
-#         dataY.append(dataset[i + look_back, 0])
-#     return numpy.array(dataX), numpy.array(dataY)
+#	 dataX, dataY = [], []
+#	 for i in range(len(dataset)-look_back-1):
+#		 a = dataset[i:(i+look_back), 0]
+#		 dataX.append(a)
+#		 dataY.append(dataset[i + look_back, 0])
+#	 return numpy.array(dataX), numpy.array(dataY)
