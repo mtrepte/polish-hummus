@@ -1,4 +1,5 @@
 from sklearn.decomposition import PCA as sklearn_PCA
+from sklearn.neighbors import KNeighborsClassifier
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
@@ -19,7 +20,8 @@ def PCA(X, y):
 
     
     # apply PCA to featurized tweets
-    X = sklearn_PCA(n_components=n_dim).fit_transform(X)
+    model = sklearn_PCA(n_components=n_dim)
+    X = .fit_transform(X)
 
     # plot data
     for i in range(len(X)):
@@ -35,7 +37,11 @@ def PCA(X, y):
 
     plt.show()
 
-# def knn(X, y):
+def knn(X, y):
+	#hyperparameters
+	n_neighbors = 5
+
+
 
 
 # def random_forest(X, y):
